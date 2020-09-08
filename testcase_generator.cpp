@@ -1,20 +1,15 @@
 #include <iostream>
-
 #include <stdio.h>
-
 #include <stdlib.h>
-
 #include <time.h>
 
 using namespace std;
 
 class TestCaseGenerator;
 class RandomNumber;
-class RandomArray;
 
 typedef TestCaseGenerator TCGen;
 typedef RandomNumber RN;
-typedef RandomArray RA;
 
 class TestCaseGenerator {
   public:
@@ -25,9 +20,7 @@ class TestCaseGenerator {
   }
   TestCaseGenerator(int t) {
     numberOfTestCases = t;
-  }~TestCaseGenerator() {
-
-  }
+  }~TestCaseGenerator() {}
 };
 
 class RandomValue {
@@ -63,6 +56,14 @@ class RandomInt: public RandomValue {
     value = (int)(RandomValue::value);
   }~RandomInt() {}
 
+  int get() {
+    return value;
+  }
+
+  void set(int x) {
+    value = x;
+  }
+
   friend ostream & operator << (ostream & out,
     const RandomInt & obj);
 };
@@ -79,6 +80,9 @@ class RandomChar: public RandomValue {
     value = (char)('a' + RandomValue::value);
   }~RandomChar() {}
 
+  char get() {
+    return value;
+  }
   friend ostream & operator << (ostream & out,
     const RandomChar & obj);
 };
@@ -99,44 +103,99 @@ class RandomFloat: public RandomValue {
     value = (float)(RandomValue::value);
     value = value - value * f;
   }~RandomFloat() {}
+
+  float get() {
+    return value;
+  }
   friend ostream & operator << (ostream & out,
     const RandomFloat & obj);
 };
 
-class RandomArray {
+class RandomIntArray {
   private:
     int * arr;
   int size;
-  int randomize(int maxm) {
-    // [0 to maxm]
-    return (rand() % (maxm + 1));
-  }
+
   public:
-
-    // friend ostream & operator << (ostream & out,
-    //   const RandomArray & c);
-
-    RandomArray() {
-      size = 0;
+    RandomIntArray() {
       arr = NULL;
+      size = 0;
     }
-  RandomArray(int n, int maxm) {
+  RandomIntArray(int n, int maxm) {
     size = n;
     arr = (int * ) malloc(n * sizeof(int));
-    for (int i = 0; i < n; i++) {
-      arr[i] = randomize(abs(maxm));
-      if (maxm < 0) arr[i] *= -1;
+    for (int i = 0; i < size; i++) {
+      arr[i] = RandomInt(maxm).get();
     }
   }
-
-  RandomArray(int n, int minm, int maxm) {
+  RandomIntArray(int n, int minm, int maxm) {
     size = n;
     arr = (int * ) malloc(n * sizeof(int));
-    for (int i = 0; i < n; i++) {
-      arr[i] = minm + (rand() % (maxm - minm + 1));
-      if (maxm < 0) arr[i] *= -1;
+    for (int i = 0; i < size; i++) {
+      arr[i] = RandomInt(minm, maxm).get();
     }
-  }~RandomArray() {}
+  }~RandomIntArray() {}
+
+  friend ostream & operator << (ostream & out,
+    const RandomIntArray & obj);
+};
+
+class RandomCharArray {
+  private:
+    char * arr;
+  int size;
+
+  public:
+    RandomCharArray() {
+      arr = NULL;
+      size = 0;
+    }
+  RandomCharArray(int n, char maxm) {
+    size = n;
+    arr = (char * ) malloc(n * sizeof(char));
+    for (int i = 0; i < size; i++) {
+      arr[i] = RandomChar(maxm).get();
+    }
+  }
+  RandomCharArray(int n, char minm, char maxm) {
+    size = n;
+    arr = (char * ) malloc(n * sizeof(char));
+    for (int i = 0; i < size; i++) {
+      arr[i] = RandomChar(minm, maxm).get();
+    }
+  }~RandomCharArray() {}
+
+  friend ostream & operator << (ostream & out,
+    const RandomCharArray & obj);
+};
+
+class RandomFloatArray {
+  private:
+    float * arr;
+  int size;
+
+  public:
+    RandomFloatArray() {
+      arr = NULL;
+      size = 0;
+    }
+  RandomFloatArray(int n, float maxm) {
+    size = n;
+    arr = (float * ) malloc(n * sizeof(float));
+    for (int i = 0; i < size; i++) {
+      arr[i] = RandomFloat(maxm).get();
+    }
+  }
+  RandomFloatArray(int n, float minm, float maxm) {
+    size = n;
+    arr = (float * ) malloc(n * sizeof(float));
+    for (int i = 0; i < size; i++) {
+      arr[i] = RandomFloat(minm, maxm).get();
+    }
+  }~RandomFloatArray() {}
+
+  friend ostream & operator << (ostream & out,
+    const RandomFloatArray & obj);
 };
 
 ostream & operator << (ostream & out,
@@ -152,22 +211,33 @@ ostream & operator << (ostream & out,
   out << obj.value;
 }
 
-// ostream & operator << (ostream & out,
-//   const RandomArray & obj) {
-//   for (int i = 0; i < obj.size; i++) {
-//     out << obj.arr[i] << ' ';
-//   }
-//   return out;
-// }
+ostream & operator << (ostream & out,
+  const RandomIntArray & obj) {
+  for (int i = 0; i < obj.size; i++) {
+    out << obj.arr[i] << ' ';
+  }
+  return out;
+}
+
+ostream & operator << (ostream & out,
+  const RandomCharArray & obj) {
+  for (int i = 0; i < obj.size; i++) {
+    out << obj.arr[i] << ' ';
+  }
+  return out;
+}
+
+ostream & operator << (ostream & out,
+  const RandomFloatArray & obj) {
+  for (int i = 0; i < obj.size; i++) {
+    out << obj.arr[i] << ' ';
+  }
+  return out;
+}
 
 void solve() {
-  RandomInt a(60, 1000);
-  cout << a << '\t';
-  RandomFloat b(60.0, 100.0);
-  cout << b << '\t';
-  RandomChar c('a', 'z');
-  cout << c << endl;
-
+  RandomFloatArray b(10, 6, 10);
+  cout << b << endl;
 }
 
 int main() {
@@ -185,8 +255,4 @@ int main() {
   How to write class prototype for derived class?
   How to use cerr
   To make RandomFloat better for ranges
-*/
-
-/*
-  To make random char of different data types
 */
